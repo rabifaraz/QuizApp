@@ -1,15 +1,26 @@
-const container = document.querySelector('.container');
-const questionBox = document.querySelector('.question');
-const choicesBox = document.querySelector('.choices');
-const nextBtn = document.querySelector('.nextBtn');
-const scoreCard = document.querySelector('.scoreCard');
-const alert = document.querySelector('.alert');
-const startBtn = document.querySelector('.startBtn');
-const timer = document.querySelector('.timer');
+var container = document.querySelector('.container');
+var questionBox = document.querySelector('.question');
+var choicesBox = document.querySelector('.choices');
+var nextBtn = document.querySelector('.nextBtn');
+var scoreCard = document.querySelector('.scoreCard');
+var alert = document.querySelector('.alert');
+var startBtn = document.querySelector('.startBtn');
+var timer = document.querySelector('.timer');
+var tick = document.querySelector('.tick');
 
 
 // Make an array of objects that stores question, choices of question and answer
-const quiz = [
+var quiz = [
+    {
+        question: "Q. What is JavaScript?",
+        choices: ["JavaScript is a scripting language used to make the website interactive", " JavaScript is an assembly language used to make the website interactive", "JavaScript is a compiled language used to make the website interactive","None of the mentioned"],
+        answer: "JavaScript is a scripting language used to make the website interactive"
+    },
+    {
+        question: "Q. Which of the following methods is used to access HTML elements using Javascript?",
+        choices: ["getElementbyId()", "getElementsByClassName()", "Both A and B", "None of the above"],
+        answer: "Both A and B"
+    },
     {
         question: "Q. Which of the following is not a CSS box model property?",
         choices: ["margin", "padding", "border-radius", "border-collapse"],
@@ -26,6 +37,16 @@ const quiz = [
         answer: "float"
     },
     {
+        question: "Q. Which symbol is used separate JavaScript statements?",
+        choices: ["Comma (,)", "Colon (:)", "Hyphen (_)", "Semicolon (;)"],
+        answer: "Semicolon (;)"
+    },
+    {
+        question: "Q. JavaScript ignores?",
+        choices: ["newlines", "tabs", "spaces", "All of the above"],
+        answer: "All of the above"
+    },    
+    {
         question: "Q. What is the purpose of the this keyword in JavaScript?",
         choices: ["It refers to the current function.", "It refers to the current object.", "It refers to the parent object.", " It is used for comments."],
         answer: "It refers to the current object."
@@ -40,11 +61,12 @@ let timeLeft = 59;
 let timerID = null;
 
 // Arrow Function to Show Questions
-const showQuestions = () => {
+function showQuestions() {
     const questionDetails = quiz[currentQuestionIndex];
     questionBox.textContent = questionDetails.question;
 
     choicesBox.textContent = "";
+    let selectedChoiceIndex = -1;
     for (let i = 0; i < questionDetails.choices.length; i++) {
         const currentChoice = questionDetails.choices[i];
         const choiceDiv = document.createElement('div');
@@ -53,12 +75,13 @@ const showQuestions = () => {
         choicesBox.appendChild(choiceDiv);
 
         choiceDiv.addEventListener('click', () => {
-            if (choiceDiv.classList.contains('selected')) {
-                choiceDiv.classList.remove('selected');
+            if (selectedChoiceIndex !== -1) {
+                // Clear the selection from other choices
+                document.querySelectorAll('.choice')[selectedChoiceIndex].classList.remove('selected');
             }
-            else {
-                choiceDiv.classList.add('selected');
-            }
+
+            choiceDiv.classList.add('selected');
+            selectedChoiceIndex = i;
         });
     }
 
@@ -68,30 +91,23 @@ const showQuestions = () => {
 }
 
 // Function to check answers
-const checkAnswer = () => {
+function checkAnswer() {
     const selectedChoice = document.querySelector('.choice.selected');
     if (selectedChoice.textContent === quiz[currentQuestionIndex].answer) {
-        // alert("Correct Answer!");
-        displayAlert("Correct Answer!");
         score++;
-    }
-    else {
-        // alert("Wrong answer");
-        displayAlert(`Wrong Answer! ${quiz[currentQuestionIndex].answer} is the Correct Answer`);
     }
     timeLeft = 59;
     currentQuestionIndex++;
     if (currentQuestionIndex < quiz.length) {
         showQuestions();
-    }
-    else {
+    } else {
         stopTimer();
         showScore();
     }
 }
 
 // Function to show score
-const showScore = () => {
+function showScore() {
     questionBox.textContent = "";
     choicesBox.textContent = "";
     scoreCard.textContent = `You Scored ${score} out of ${quiz.length}!`;
@@ -99,10 +115,14 @@ const showScore = () => {
     nextBtn.textContent = "Play Again";
     quizOver = true;
     timer.style.display = "none";
+    if (tickImage) {
+        tickImage.style.display = "block";
+    }
+
 }
 
 // Function to Show Alert
-const displayAlert = (msg) => {
+function displayAlert(msg) {
     alert.style.display = "block";
     alert.textContent = msg;
     setTimeout(()=>{
@@ -111,36 +131,37 @@ const displayAlert = (msg) => {
 }
 
 // Function to Start Timer
-const startTimer = () => {
+function startTimer() {
     clearInterval(timerID); // Check for any exist timers
     timer.textContent = timeLeft;
 
-    const countDown = ()=>{
-        timeLeft--;
-        timer.textContent = timeLeft;
-        if(timeLeft === 0){
-            const confirmUser = confirm("Time Up!!! Do you want to play the quiz again");
-            if(confirmUser){
-                timeLeft = 59;
-                startQuiz();
+    function countDown() {
+        
+        if (timeLeft === 0) {
+            stopTimer();
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quiz.length) {
+                timeLeft = 59; // Reset the timer
+                showQuestions();
+                startTimer(); // Restart the timer
+            } else {
+                showScore();
             }
-            else{
-                startBtn.style.display = "block";
-                container.style.display = "none";
-                return;
-            }
+        }else{
+            timeLeft--;
+            timer.textContent = timeLeft;
         }
     }
     timerID = setInterval(countDown, 1000);
 }
 
 // Function to Stop Timer
-const stopTimer = () =>{
+function stopTimer() {
     clearInterval(timerID);
 }
 
 // Function to shuffle question
-const shuffleQuestions = () =>{
+function shuffleQuestions() {
     for(let i=quiz.length-1; i>0; i--){
         const j = Math.floor(Math.random() * (i+1));
         [quiz[i], quiz[j]] = [quiz[j], quiz[i]];
@@ -150,7 +171,7 @@ const shuffleQuestions = () =>{
 }
 
 // Function to Start Quiz
-const startQuiz = () =>{
+function startQuiz() {
     timeLeft = 59;
     timer.style.display = "flex";
     shuffleQuestions();
@@ -167,7 +188,7 @@ nextBtn.addEventListener('click', () => {
     const selectedChoice = document.querySelector('.choice.selected');
     if (!selectedChoice && nextBtn.textContent === "Next") {
         // alert("Select your answer");
-        displayAlert("Select your answer");
+        displayAlert("Select your answer first");
         return;
     }
     if (quizOver) {
