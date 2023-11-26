@@ -1,58 +1,36 @@
+var firebaseConfig = {
+  apiKey: "AIzaSyCqTXiRBEnMHZGEu14uE_57sslvcwdlV_I",
+  authDomain: "a7layout-7ed56.firebaseapp.com",
+  databaseURL: "https://a7layout-7ed56-default-rtdb.firebaseio.com",
+  projectId: "a7layout-7ed56",
+  storageBucket: "a7layout-7ed56.appspot.com",
+  messagingSenderId: "1059789910437",
+  appId: "1:1059789910437:web:017aa189a695f215a6b84c"
+};
+
+var app = firebase.initializeApp(firebaseConfig);
+
+
 var container = document.querySelector('.container');
 var questionBox = document.querySelector('.question');
 var choicesBox = document.querySelector('.choices');
 var nextBtn = document.querySelector('.nextBtn');
 var scoreCard = document.querySelector('.scoreCard');
+var percentageCard = document.querySelector('.percentageCard');
 var alert = document.querySelector('.alert');
 var startBtn = document.querySelector('.startBtn');
 var timer = document.querySelector('.timer');
-var tick = document.querySelector('.tick');
+// var tick = document.querySelector('.tick');
 
+var quiz;
 
-// Make an array of objects that stores question, choices of question and answer
-var quiz = [
-    {
-        question: "Q. What is JavaScript?",
-        choices: ["JavaScript is a scripting language used to make the website interactive", " JavaScript is an assembly language used to make the website interactive", "JavaScript is a compiled language used to make the website interactive","None of the mentioned"],
-        answer: "JavaScript is a scripting language used to make the website interactive"
-    },
-    {
-        question: "Q. Which of the following methods is used to access HTML elements using Javascript?",
-        choices: ["getElementbyId()", "getElementsByClassName()", "Both A and B", "None of the above"],
-        answer: "Both A and B"
-    },
-    {
-        question: "Q. Which of the following is not a CSS box model property?",
-        choices: ["margin", "padding", "border-radius", "border-collapse"],
-        answer: "border-collapse"
-    },
-    {
-        question: "Q. Which of the following is not a valid way to declare a function in JavaScript?",
-        choices: ["function myFunction() {}", " let myFunction = function() {};", "myFunction: function() {}", "const myFunction = () => {};"],
-        answer: "myFunction: function() {}"
-    },
-    {
-        question: "Q. Which of the following is not a JavaScript data type?",
-        choices: ["string", "boolean", "object", "float"],
-        answer: "float"
-    },
-    {
-        question: "Q. Which symbol is used separate JavaScript statements?",
-        choices: ["Comma (,)", "Colon (:)", "Hyphen (_)", "Semicolon (;)"],
-        answer: "Semicolon (;)"
-    },
-    {
-        question: "Q. JavaScript ignores?",
-        choices: ["newlines", "tabs", "spaces", "All of the above"],
-        answer: "All of the above"
-    },    
-    {
-        question: "Q. What is the purpose of the this keyword in JavaScript?",
-        choices: ["It refers to the current function.", "It refers to the current object.", "It refers to the parent object.", " It is used for comments."],
-        answer: "It refers to the current object."
-    }
-];
-
+firebase.database().ref('questions').once('value',function(data){
+    quiz = Object.values(data.val()).map(val => ({
+        question: val.question,
+        choices: val.choices,
+        answer: val.choices[val.answer]
+    }));
+})
 // Making Variables
 let currentQuestionIndex = 0;
 let score = 0;
@@ -111,13 +89,14 @@ function showScore() {
     questionBox.textContent = "";
     choicesBox.textContent = "";
     scoreCard.textContent = `You Scored ${score} out of ${quiz.length}!`;
+    percentageCard.textContent = `Percentage: ${(score * 100) / quiz.length}%`;
     displayAlert("You have completed this quiz!");
     nextBtn.textContent = "Play Again";
     quizOver = true;
     timer.style.display = "none";
-    if (tickImage) {
-        tickImage.style.display = "block";
-    }
+    // if (tickImage) {
+    //     tickImage.style.display = "block";
+    // }
 
 }
 

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Builder</title>
+
+    <script src="https://www.gstatic.com/firebasejs/7.17.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.17.2/firebase-database.js"></script>
+</head>
+<body>
+    
+    <H1>Test Builder</H1>
+    <form id="formBuilder" onsubmit="setvalues(event)">
+    <input id="text" type="text" name="question" required placeholder="Enter your Question">
+    <br>
+    <br>
+    <input id="opt1" type="text" name="opt1" required placeholder="Enter first option"> 
+    <br>
+    <br>
+    <input id="opt2" type="text" name="opt2" required placeholder="Enter second option"> 
+    <br>
+    <br>
+    <input id="opt3" type="text" name="opt3" placeholder="Enter third option"> 
+    <br>
+    <br>
+    <input id="opt4" type="text" name="opt4" placeholder="Enter fourth option"> 
+    <br>
+    <br>
+    <input id="answer" type="text" name="answer" required placeholder="Correct answer"> 
+    <br>
+    <br>
+
+    <button>Submit</button>
+</form>
+    <script src="builder.js"></script>
+</body>
+</html>
